@@ -15,6 +15,68 @@ import (
 	"strings"
 )
 
+type FileContainer interface {
+	SetDataAsString(data string)
+	GetDataAsString() string
+	SetPath(dirpath string)
+	GetPath() string
+	SetFilename(filename string)
+	GetFilename() string
+	Write()
+	Read()
+}
+
+func NewFileContainer() FileContainer {
+	return new(FileContainerImpl)
+}
+
+type FileContainerImpl struct {
+	data              []byte
+	dirpath, filename string
+}
+
+func (f *FileContainerImpl) SetData(data []byte) {
+	f.data = data
+}
+
+func (f *FileContainerImpl) GetData() []byte {
+	return f.data
+}
+
+func (f *FileContainerImpl) SetDataAsString(data string) {
+	f.data = []byte(data)
+}
+
+func (f *FileContainerImpl) GetDataAsString() string {
+	return string(f.data)
+}
+
+func (f *FileContainerImpl) SetPath(dirpath string) {
+	f.dirpath = dirpath
+}
+
+func (f *FileContainerImpl) GetPath() string {
+	return f.dirpath
+}
+
+func (f *FileContainerImpl) SetFilename(filename string) {
+	f.filename = filename
+}
+
+func (f *FileContainerImpl) GetFilename() string {
+	return f.filename
+}
+
+func (f *FileContainerImpl) Write() {
+	WriteFromFileContainer(f)
+}
+
+func (f *FileContainerImpl) Read() {
+	ReadFromFileContainer(f)
+}
+
+/* util fns */
+
 func ReadDirEntriesEndingWith(path string, ending string) []string {
 	log.Println("Opening files inside " + path + " ending with " + ending)
 	fileInfos := getDirContentInfos(path)
@@ -51,8 +113,12 @@ func pathExists(path string) (bool, error) {
 	return true, err
 }
 
+func WriteFromFileContainer(f FileContainer) {
+	WriteStringToFS(f.GetPath(), f.GetFilename(), f.GetDataAsString())
+}
+
 func WriteStringToFS(path, filename, content string) {
-	log.Println("Writing to " + path + filename)
+	//log.Println("Writing to " + path + filename)
 	pathExists, _ := pathExists(path)
 	if !pathExists {
 		createPath(path)
@@ -67,12 +133,17 @@ func WriteStringToFS(path, filename, content string) {
 	}
 }
 
+func ReadFromFileContainer(f FileContainer) {
+	data := ReadFileAsString(f.GetPath() + f.GetFilename())
+	f.SetDataAsString(data)
+}
+
 func ReadFileAsString(path string) string {
 	return string(ReadByteArrayFromFile(path))
 }
 
 func ReadByteArrayFromFile(path string) []byte {
-	log.Println("Reading file " + path)
+	//log.Println("Reading file " + path)
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalln(err.Error(), path)
