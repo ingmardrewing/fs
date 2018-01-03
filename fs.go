@@ -118,7 +118,6 @@ func WriteFromFileContainer(f FileContainer) {
 }
 
 func WriteStringToFS(path, filename, content string) {
-	//log.Println("Writing to " + path + filename)
 	pathExists, _ := pathExists(path)
 	if !pathExists {
 		createPath(path)
@@ -149,6 +148,18 @@ func ReadByteArrayFromFile(path string) []byte {
 		log.Fatalln(err.Error(), path)
 	}
 	return raw
+}
+
+func IsValidPathTo(path string, suffixes ...string) bool {
+	if _, err := os.Stat(path); err == nil {
+		for _, s := range suffixes {
+			if strings.HasSuffix(path, s) {
+				return true
+			}
+		}
+	}
+	fmt.Println("This path doesn't lead to a file with an ending like", strings.Join(suffixes, ", "))
+	return false
 }
 
 func ReadDirEntries(path string, beingDir bool) []string {
@@ -209,4 +220,23 @@ func GetImageConfig(path string) image.Config {
 		log.Println(err)
 	}
 	return img
+}
+
+func GetPathWithoutFilename(path string) string {
+	if _, err := os.Stat(path); err == nil {
+		parts := strings.Split(path, "/")
+		newpath := strings.Join(parts[:len(parts)-1], "/")
+		return newpath + "/"
+	}
+	log.Fatalln("Not a valid path", path)
+	return ""
+}
+
+func GetFilenameFromPath(path string) string {
+	if _, err := os.Stat(path); err == nil {
+		parts := strings.Split(path, "/")
+		return parts[len(parts)-1]
+	}
+	log.Fatalln("Not a valid path", path)
+	return ""
 }
