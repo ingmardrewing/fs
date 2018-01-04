@@ -77,13 +77,14 @@ func (f *FileContainerImpl) Read() {
 
 /* util fns */
 
-func ReadDirEntriesEndingWith(path string, ending string) []string {
-	log.Println("Opening files inside " + path + " ending with " + ending)
+func ReadDirEntriesEndingWith(path string, ending ...string) []string {
 	fileInfos := getDirContentInfos(path)
 	names := []string{}
 	for _, f := range fileInfos {
-		if strings.HasSuffix(f.Name(), ending) {
-			names = append(names, f.Name())
+		for _, e := range ending {
+			if strings.HasSuffix(f.Name(), e) {
+				names = append(names, f.Name())
+			}
 		}
 	}
 	sort.Strings(names)
@@ -97,7 +98,6 @@ func createPath(absPath string) {
 		os.Exit(1)
 	}
 	if !exists {
-		log.Println("creating path", absPath)
 		os.MkdirAll(absPath, 0755)
 	}
 }
@@ -142,7 +142,6 @@ func ReadFileAsString(path string) string {
 }
 
 func ReadByteArrayFromFile(path string) []byte {
-	//log.Println("Reading file " + path)
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalln(err.Error(), path)
