@@ -157,7 +157,7 @@ func IsValidPathTo(path string, suffixes ...string) bool {
 			}
 		}
 	}
-	fmt.Println("This path doesn't lead to a file with an ending like", strings.Join(suffixes, ", "))
+	fmt.Println("This path doesn't lead to any file with an ending like", strings.Join(suffixes, ", "))
 	return false
 }
 
