@@ -18,6 +18,8 @@ import (
 type FileContainer interface {
 	SetDataAsString(data string)
 	GetDataAsString() string
+	GetData() []byte
+	SetData(data []byte)
 	SetPath(dirpath string)
 	GetPath() string
 	SetFilename(filename string)
@@ -114,7 +116,14 @@ func pathExists(path string) (bool, error) {
 }
 
 func WriteFromFileContainer(f FileContainer) {
-	WriteStringToFS(f.GetPath(), f.GetFilename(), f.GetDataAsString())
+	path := f.GetPath()
+	filename := f.GetFilename()
+	log.Println("path", path)
+	log.Println("filename", filename)
+	if !strings.HasSuffix(path, "/") {
+		path += "/"
+	}
+	WriteStringToFS(path, filename, f.GetDataAsString())
 }
 
 func WriteStringToFS(path, filename, content string) {
@@ -138,7 +147,8 @@ func ReadFromFileContainer(f FileContainer) {
 }
 
 func ReadFileAsString(path string) string {
-	return string(ReadByteArrayFromFile(path))
+	content := string(ReadByteArrayFromFile(path))
+	return content
 }
 
 func ReadByteArrayFromFile(path string) []byte {
