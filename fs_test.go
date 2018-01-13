@@ -3,26 +3,26 @@ package fs
 import "testing"
 
 func TestGetImageDimensions(t *testing.T) {
-	pngPath := "/Users/drewing/Desktop/devabo_de_uploads/colour_tutorial.png"
+	pngPath := "testResources/add/ClassicPen.png"
 	w, h := GetImageDimensions(pngPath)
-	if w != 800 || h != 1645 {
-		t.Errorf("expected %d to be 800 and %d to be 1645", w, h)
+	if w != 800 || h != 1498 {
+		t.Errorf("expected %d to be 800 and %d to be 1498", w, h)
 	}
 }
 
 func TestGetPathWithoutFilename(t *testing.T) {
-	path := "/Users/drewing/Desktop/drewing2018/add/atthezoo.png"
+	path := "testResources/add/ClassicPen.png"
 	actual := GetPathWithoutFilename(path)
-	expected := "/Users/drewing/Desktop/drewing2018/add/"
+	expected := "testResources/add/"
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
 	}
 }
 
 func TestGetFilenameFromPath(t *testing.T) {
-	path := "/Users/drewing/Desktop/drewing2018/add/atthezoo.png"
+	path := "testResources/add/ClassicPen.png"
 	actual := GetFilenameFromPath(path)
-	expected := "atthezoo.png"
+	expected := "ClassicPen.png"
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
 	}
