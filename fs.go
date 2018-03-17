@@ -11,6 +11,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -94,7 +96,7 @@ func ReadDirEntriesEndingWith(path string, ending ...string) []string {
 }
 
 func createPath(absPath string) {
-	exists, err := pathExists(absPath)
+	exists, err := PathExists(absPath)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
@@ -104,7 +106,7 @@ func createPath(absPath string) {
 	}
 }
 
-func pathExists(path string) (bool, error) {
+func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
@@ -116,33 +118,28 @@ func pathExists(path string) (bool, error) {
 }
 
 func WriteFromFileContainer(f FileContainer) {
-	path := f.GetPath()
-	filename := f.GetFilename()
-	log.Println("path", path)
-	log.Println("filename", filename)
-	if !strings.HasSuffix(path, "/") {
-		path += "/"
-	}
-	WriteStringToFS(path, filename, f.GetDataAsString())
+	WriteStringToFS(f.GetPath(), f.GetFilename(), f.GetDataAsString())
 }
 
-func WriteStringToFS(path, filename, content string) {
-	pathExists, _ := pathExists(path)
+func WriteStringToFS(filepath, filename, content string) {
+	pathExists, _ := PathExists(filepath)
 	if !pathExists {
-		createPath(path)
+		createPath(filepath)
 	}
-	if strings.LastIndex(path, "/") == -1 {
-		path += "/"
-	}
-	err := ioutil.WriteFile(path+filename, []byte(content), 0644)
+	completepath := path.Join(filepath, filename)
+	err := ioutil.WriteFile(completepath, []byte(content), 0644)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("fs.WriteStringToFs", err.Error())
 		os.Exit(1)
 	}
 }
 
 func ReadFromFileContainer(f FileContainer) {
-	data := ReadFileAsString(f.GetPath() + f.GetFilename())
+	path := f.GetPath()
+	if !strings.HasSuffix(path, "/") {
+		path += "/"
+	}
+	data := ReadFileAsString(path + f.GetFilename())
 	f.SetDataAsString(data)
 }
 
@@ -155,6 +152,9 @@ func ReadByteArrayFromFile(path string) []byte {
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalln(err.Error(), path)
+	}
+	if len(raw) == 0 {
+		log.Println("Empty file:", path)
 	}
 	return raw
 }
@@ -169,6 +169,32 @@ func IsValidPathTo(path string, suffixes ...string) bool {
 	}
 	fmt.Println("This path doesn't lead to any file with an ending like", strings.Join(suffixes, ", "))
 	return false
+}
+
+func RemoveDirContents(basedir string) error {
+	d, err := os.Open(basedir)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	subdirnames, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, subdirname := range subdirnames {
+		err = os.RemoveAll(filepath.Join(basedir, subdirname))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func RemoveFile(p, filename string) {
+	err := os.Remove(path.Join(p, filename))
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func ReadDirEntries(path string, beingDir bool) []string {
