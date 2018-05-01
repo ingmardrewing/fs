@@ -119,6 +119,26 @@ func CreateDir(absPath string) error {
 	return nil
 }
 
+func RemoveDir(absPath string) error {
+	exists, err := PathExists(absPath)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("Dir doesn't exist at" + absPath)
+	}
+	fi, err := os.Stat(absPath)
+	if err != nil {
+		return err
+	}
+	mode := fi.Mode()
+	if !mode.IsDir() {
+		return errors.New("Is not a directory:" + absPath)
+	}
+	os.Remove(absPath)
+	return nil
+}
+
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
