@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 )
@@ -307,4 +308,9 @@ func GetFilenameFromPath(path string) string {
 	}
 	log.Fatalln("Not a valid path", path)
 	return ""
+}
+
+func Pwd() string {
+	_, filename, _, _ := runtime.Caller(1)
+	return path.Dir(filename)
 }
