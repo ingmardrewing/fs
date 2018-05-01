@@ -3,6 +3,7 @@ package fs
 import (
 	"bufio"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -13,6 +14,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 )
@@ -104,6 +106,38 @@ func createPath(absPath string) {
 	if !exists {
 		os.MkdirAll(absPath, 0755)
 	}
+}
+
+func CreateDir(absPath string) error {
+	exists, err := PathExists(absPath)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return errors.New("Path already exists")
+	}
+	os.MkdirAll(absPath, 0755)
+	return nil
+}
+
+func RemoveDir(absPath string) error {
+	exists, err := PathExists(absPath)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("Dir doesn't exist at" + absPath)
+	}
+	fi, err := os.Stat(absPath)
+	if err != nil {
+		return err
+	}
+	mode := fi.Mode()
+	if !mode.IsDir() {
+		return errors.New("Is not a directory:" + absPath)
+	}
+	os.Remove(absPath)
+	return nil
 }
 
 func PathExists(path string) (bool, error) {
@@ -274,4 +308,9 @@ func GetFilenameFromPath(path string) string {
 	}
 	log.Fatalln("Not a valid path", path)
 	return ""
+}
+
+func Pwd() string {
+	_, filename, _, _ := runtime.Caller(1)
+	return path.Dir(filename)
 }
