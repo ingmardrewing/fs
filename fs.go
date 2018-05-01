@@ -3,6 +3,7 @@ package fs
 import (
 	"bufio"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -106,6 +107,18 @@ func createPath(absPath string) {
 	}
 }
 
+func CreateDir(absPath string) error {
+	exists, err := PathExists(absPath)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return errors.New("Path already exists")
+	}
+	os.MkdirAll(absPath, 0755)
+	return nil
+}
+
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -114,7 +127,7 @@ func PathExists(path string) (bool, error) {
 	if os.IsNotExist(err) {
 		return false, nil
 	}
-	return true, err
+	return false, err
 }
 
 func WriteFromFileContainer(f FileContainer) {
