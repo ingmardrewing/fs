@@ -127,7 +127,7 @@ func PathExists(path string) (bool, error) {
 	if os.IsNotExist(err) {
 		return false, nil
 	}
-	return false, err
+	return true, err
 }
 
 func WriteFromFileContainer(f FileContainer) {
