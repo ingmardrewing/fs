@@ -59,7 +59,7 @@ func (f *FileContainerImpl) GetDataAsString() string {
 }
 
 func (f *FileContainerImpl) SetPath(dirpath string) {
-	f.dirpath = dirpath
+	f.dirpath = filepath.FromSlash(dirpath)
 }
 
 func (f *FileContainerImpl) GetPath() string {
@@ -141,8 +141,9 @@ func RemoveDir(absPath string) error {
 	return nil
 }
 
-func PathExists(path string) (bool, error) {
-	_, err := os.Stat(path)
+func PathExists(pth string) (bool, error) {
+	pth = filepath.FromSlash(pth)
+	_, err := os.Stat(pth)
 	if err == nil {
 		return true, nil
 	}
@@ -156,12 +157,13 @@ func WriteFromFileContainer(f FileContainer) {
 	WriteStringToFS(f.GetPath(), f.GetFilename(), f.GetDataAsString())
 }
 
-func WriteStringToFS(filepath, filename, content string) {
-	pathExists, _ := PathExists(filepath)
+func WriteStringToFS(fpath, filename, content string) {
+	pth := filepath.FromSlash(fpath)
+	pathExists, _ := PathExists(pth)
 	if !pathExists {
-		createPath(filepath)
+		createPath(pth)
 	}
-	completepath := path.Join(filepath, filename)
+	completepath := path.Join(pth, filename)
 	err := ioutil.WriteFile(completepath, []byte(content), 0644)
 	if err != nil {
 		fmt.Println("fs.WriteStringToFs", err.Error())
