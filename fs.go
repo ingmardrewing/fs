@@ -142,7 +142,9 @@ func RemoveDir(absPath string) error {
 }
 
 func PathExists(pth string) (bool, error) {
+	fmt.Println("without slash:" + pth)
 	pth = filepath.FromSlash(pth)
+	fmt.Println("after FromSlash:" + pth)
 	_, err := os.Stat(pth)
 	if err == nil {
 		return true, nil
