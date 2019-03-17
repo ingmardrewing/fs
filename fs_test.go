@@ -33,7 +33,7 @@ func TestPathExists(t *testing.T) {
 		t.Error("Expected pathExists to return", expected, "but it returned", actual)
 	}
 
-	p = path.Join(getTestFileDirPath(), "testResources/db")
+	p = path.Join(getTestFileDirPath(), "testResources")
 	expected = true
 	actual, _ = PathExists(p)
 
