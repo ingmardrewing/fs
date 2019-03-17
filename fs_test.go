@@ -36,12 +36,12 @@ func TestPathExists(t *testing.T) {
 		t.Error("Expected pathExists to return", expected, "but it returned", actual)
 	}
 
-	files, err := ioutil.ReadDir("./")
+	p = path.Join(getTestFileDirPath(), "testResources")
+	files, err := ioutil.ReadDir(p)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	p = path.Join(getTestFileDirPath(), "testResources")
 	fmt.Println("Contents of " + p)
 	for _, f := range files {
 		fmt.Println(f.Name())
