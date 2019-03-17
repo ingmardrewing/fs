@@ -1,9 +1,6 @@
 package fs
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"runtime"
@@ -34,17 +31,6 @@ func TestPathExists(t *testing.T) {
 
 	if actual != expected {
 		t.Error("Expected pathExists to return", expected, "but it returned", actual)
-	}
-
-	p = path.Join(getTestFileDirPath(), "testResources")
-	files, err := ioutil.ReadDir(p)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Contents of " + p)
-	for _, f := range files {
-		fmt.Println(f.Name())
 	}
 
 	p = path.Join(getTestFileDirPath(), "testResources/db")
